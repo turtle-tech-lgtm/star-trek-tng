@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Star Trek: The Next Generation — USS Enterprise NCC-1701-D Command Simulator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="lcars-app">
+    <!-- ====================================================================
+         TOP LCARS HEADER BAR
+         ==================================================================== -->
+    <header class="lcars-header">
+      <div class="lcars-elbow-top-left">
+        <span class="lcars-ship-registry">GALAXY CLASS // NCC-1701-D</span>
+        <span class="lcars-ship-name">USS ENTERPRISE</span>
+      </div>
+
+      <div class="lcars-header-center">
+        <div class="lcars-top-bars">
+          <div class="lcars-bar-segment seg-peach">LCARS 47-902</div>
+          <div class="lcars-bar-segment seg-lavender" id="stardateReadout">STARDATE 43992.4</div>
+          <div class="lcars-bar-segment seg-blue seg-flex">MAIN BRIDGE // DECK 1 COMMAND CONSOLE</div>
+          <button class="mini-lcars-btn" id="btnWarpFinalBoss" style="border-radius:0;padding:0 14px;background:var(--lcars-green);color:#000;font-weight:900;">
+            ⚔ WARP TO FINAL BOSS
+          </button>
+          <button class="mini-lcars-btn" id="btnToggleAudio" style="border-radius:0;padding:0 12px;background:var(--lcars-lilac);color:#000;">
+            AUDIO: ONLINE
+          </button>
+          <button class="mini-lcars-btn" id="btnOpenManual" style="border-radius:0;padding:0 12px;background:var(--lcars-gold);color:#000;">
+            STARFLEET MANUAL
+          </button>
+        </div>
+
+        <nav class="lcars-mode-tabs" aria-label="Main Bridge Stations">
+          <button class="lcars-tab-btn active" data-deck="tactical">
+            <span>TACTICAL &amp; VIEWSCREEN</span>
+            <span class="tab-code">01-TAC</span>
+          </button>
+          <button class="lcars-tab-btn" data-deck="hail">
+            <span>HAIL &amp; DIPLOMACY</span>
+            <span class="tab-code">02-COM</span>
+          </button>
+          <button class="lcars-tab-btn" data-deck="away">
+            <span>TRANSPORTER &amp; AWAY TEAM</span>
+            <span class="tab-code">03-TRN</span>
+          </button>
+          <button class="lcars-tab-btn" data-deck="astrometrics">
+            <span>ASTROMETRICS &amp; EPISODES</span>
+            <span class="tab-code">04-NAV</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="lcars-header-right">
+        <div class="alert-indicator-box yellow" id="alertIndicatorBox" title="Click to cycle Condition Green / Yellow / Red Alert">
+          <span class="alert-label-small">DEFENSIVE POSTURE</span>
+          <span class="alert-status-title" id="alertStatusTitle">YELLOW ALERT</span>
+        </div>
+        <div class="lcars-endcap-right"></div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         MAIN 3-COLUMN BRIDGE WORKSPACE
+         ==================================================================== -->
+    <main class="lcars-workspace">
+      <!-- LEFT COLUMN: BRIDGE ENGINEERING, SHIELDS, POWER & HARMONICS -->
+      <section class="lcars-column scroller" style="overflow-y:auto;" aria-label="Engineering and Defensive Systems">
+        <div class="lcars-section-header gold">
+          <span>SHIP TELEMETRY</span>
+          <span>ENG-01</span>
+        </div>
+
+        <div class="telemetry-card">
+          <div class="stat-row">
+            <span class="stat-label">HULL INTEGRITY</span>
+            <div class="stat-bar-wrap"><div class="stat-bar-fill fill-hull" id="hullBarFill" style="width:100%"></div></div>
+            <span class="stat-value" id="hullValText">100%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">SHIELD GRID</span>
+            <div class="stat-bar-wrap"><div class="stat-bar-fill fill-shields" id="shieldBarFill" style="width:100%"></div></div>
+            <span class="stat-value" id="shieldValText">100%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">WARP RESERVE</span>
+            <div class="stat-bar-wrap"><div class="stat-bar-fill fill-energy" id="energyBarFill" style="width:100%"></div></div>
+            <span class="stat-value" id="energyValText">100%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">TORPEDO BAYS</span>
+            <span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--lcars-salmon);font-weight:700;" id="torpedoCountText">12 / 12</span>
+          </div>
+        </div>
+
+        <div class="lcars-section-header blue">
+          <span>DIRECTIONAL SHIELDS</span>
+          <button class="mini-lcars-btn" id="btnBalanceShields" style="background:#060913;color:var(--lcars-blue);padding:1px 7px;">EQUALIZE</button>
+        </div>
+
+        <div class="shield-grid-schematic" title="Click any shield arc to boost it (+25% for 10% Warp Energy)">
+          <div></div>
+          <button class="shield-arc-pill" data-arc="fwd" id="shield-arc-fwd">FWD 100%</button>
+          <div></div>
+
+          <button class="shield-arc-pill" data-arc="port" id="shield-arc-port">PORT 100%</button>
+          <div class="enterprise-mini-silhouette">
+            <svg viewBox="0 0 80 50" width="66" height="42">
+              <ellipse cx="52" cy="25" rx="18" ry="21" fill="#99ccff" opacity="0.85"/>
+              <rect x="18" y="21" width="24" height="8" rx="4" fill="#6699cc"/>
+              <rect x="8" y="8" width="24" height="4" rx="2" fill="#ff9900"/>
+              <rect x="8" y="38" width="24" height="4" rx="2" fill="#ff9900"/>
+            </svg>
+          </div>
+          <button class="shield-arc-pill" data-arc="stbd" id="shield-arc-stbd">STBD 100%</button>
+
+          <div></div>
+          <button class="shield-arc-pill" data-arc="aft" id="shield-arc-aft">AFT 100%</button>
+          <div></div>
+        </div>
+
+        <div class="lcars-section-header peach">
+          <span>WARP POWER ALLOCATION</span>
+          <span>M/AM</span>
+        </div>
+
+        <div class="telemetry-card power-sliders">
+          <div class="power-slider-row">
+            <label for="power-weapons">WEAPONS</label>
+            <input type="range" id="power-weapons" class="lcars-range" min="5" max="75" value="30" />
+            <span class="stat-value" id="power-weapons-val">30%</span>
+          </div>
+          <div class="power-slider-row">
+            <label for="power-shields">SHIELDS</label>
+            <input type="range" id="power-shields" class="lcars-range" min="5" max="75" value="30" />
+            <span class="stat-value" id="power-shields-val">30%</span>
+          </div>
+          <div class="power-slider-row">
+            <label for="power-engines">ENGINES</label>
+            <input type="range" id="power-engines" class="lcars-range" min="5" max="75" value="25" />
+            <span class="stat-value" id="power-engines-val">25%</span>
+          </div>
+          <div class="power-slider-row">
+            <label for="power-sensors">SENSORS</label>
+            <input type="range" id="power-sensors" class="lcars-range" min="5" max="75" value="15" />
+            <span class="stat-value" id="power-sensors-val">15%</span>
+          </div>
+          <div class="power-presets">
+            <button class="mini-lcars-btn" id="presetAttack">ATTACK</button>
+            <button class="mini-lcars-btn" id="presetDefense">DEFENSE</button>
+            <button class="mini-lcars-btn" id="presetBalanced">BALANCED</button>
+          </div>
+        </div>
+
+        <div class="lcars-section-header teal">
+          <span>HARMONIC MODULATION</span>
+          <span>MHz</span>
+        </div>
+
+        <div class="telemetry-card">
+          <div class="freq-box">
+            <span class="freq-readout" id="freqReadout">248.4 MHz</span>
+            <button class="mini-lcars-btn" id="btnRemodulate" style="background:var(--lcars-ice);color:#000;font-weight:800;">
+              REMODULATE (M)
+            </button>
+          </div>
+          <input type="range" id="freqSlider" class="lcars-range" min="240.0" max="260.0" step="0.2" value="248.4" />
+        </div>
+
+        <div class="lcars-section-header salmon">
+          <span>SUBSYSTEM STATUS</span>
+          <span>DAMAGE CTRL</span>
+        </div>
+
+        <div class="subsystems-grid" title="Click any damaged subsystem to dispatch emergency repair teams">
+          <div class="subsystem-pill" id="sys-warp" data-sys="warp"><span>WARP CORE</span><span class="sys-pct">100%</span></div>
+          <div class="subsystem-pill" id="sys-phasers" data-sys="phasers"><span>PHASERS</span><span class="sys-pct">100%</span></div>
+          <div class="subsystem-pill" id="sys-shields" data-sys="shields"><span>SHIELDS</span><span class="sys-pct">100%</span></div>
+          <div class="subsystem-pill" id="sys-impulse" data-sys="impulse"><span>IMPULSE</span><span class="sys-pct">100%</span></div>
+          <div class="subsystem-pill" id="sys-sensors" data-sys="sensors"><span>SENSORS</span><span class="sys-pct">100%</span></div>
+          <div class="subsystem-pill" id="sys-lifesupport" data-sys="lifesupport"><span>LIFE SUPP</span><span class="sys-pct">100%</span></div>
+        </div>
+      </section>
+
+      <!-- CENTER COLUMN: MAIN VIEWSCREEN, TACTICAL ARCADE & OVERLAY DECKS -->
+      <section class="center-stage" aria-label="Main Bridge Viewscreen">
+        <div class="viewscreen-frame">
+          <canvas id="tacticalCanvas"></canvas>
+
+          <!-- Top HUD Overlay -->
+          <div class="viewscreen-hud-top">
+            <div class="hud-sector-badge">
+              <div class="hud-sector-title" id="hudSectorTitle">EPISODE I: SHADOWS OF THE NEUTRAL ZONE</div>
+              <div class="hud-objective-text" id="hudObjectiveText">Loading sector telemetry...</div>
+            </div>
+
+            <div class="hud-target-box" id="hudTargetBox"></div>
+          </div>
+
+          <!-- Final Boss 3-Phase Telemetry Banner -->
+          <div id="bossHudBanner" class="boss-hud-banner hidden"></div>
+
+          <!-- Bottom Tactical Arcade Action Bar -->
+          <div class="viewscreen-hud-bottom">
+            <div class="tactical-controls-bar">
+              <button class="tac-btn phaser" id="btnFirePhasers">
+                <span>FIRE PHASERS</span>
+                <span class="kbd-hint">SPACE</span>
+              </button>
+              <button class="tac-btn torpedo" id="btnFireTorpedo">
+                <span>PHOTON TORPEDO</span>
+                <span class="kbd-hint">F</span>
+              </button>
+              <button class="tac-btn evasive" id="btnEvasive">
+                <span>EVASIVE</span>
+                <span class="kbd-hint">E</span>
+              </button>
+              <button class="tac-btn scan" id="btnScienceScan">
+                <span>SENSOR SCAN</span>
+              </button>
+              <button class="tac-btn hail" id="btnOpenHail">
+                <span>HAIL VESSEL</span>
+                <span class="kbd-hint">H</span>
+              </button>
+              <button class="tac-btn away" id="btnOpenAway">
+                <span>BEAM AWAY TEAM</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================================================================
+               DECK OVERLAY 1: VIEWSCREEN HAILING & DIPLOMACY (MODE 2A)
+               ================================================================ -->
+          <div class="deck-overlay scroller hidden" id="hailDeckOverlay">
+            <div class="lcars-section-header teal">
+              <span>MAIN VIEWSCREEN // SUBSPACE HAILING CHANNEL OPEN</span>
+              <button class="mini-lcars-btn" onclick="window.enterpriseGame.switchDeck('tactical')">RETURN TO TACTICAL</button>
+            </div>
+
+            <div class="hail-container">
+              <div class="hail-portrait-box">
+                <div class="portrait-svg-wrap" id="hailPortraitBox"></div>
+                <div class="speaker-name-badge" id="hailSpeakerName">Commander Tomalak</div>
+                <div class="speaker-sub-badge" id="hailSpeakerTitle">Romulan Star Empire</div>
+              </div>
+
+              <div class="hail-dialogue-column">
+                <div>
+                  <div class="hail-speech-text" id="hailSpeechText"></div>
+                  <div class="advisor-insights-strip" id="hailAdvisorStrip" style="margin-top:10px;"></div>
+                </div>
+
+                <div>
+                  <div style="font-family:var(--font-lcars);font-size:0.85rem;color:var(--lcars-gold);margin-bottom:6px;letter-spacing:1px;">
+                    SELECT CAPTAIN PICARD’S RESPONSE:
+                  </div>
+                  <div class="dialogue-choices-list" id="hailChoicesList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================
+               DECK OVERLAY 2: TRANSPORTER ROOM 3 & AWAY TEAM MISSIONS (MODE 2B)
+               ================================================================ -->
+          <div class="deck-overlay scroller hidden" id="awayDeckOverlay">
+            <div class="lcars-section-header gold">
+              <span id="awayMissionTitle">TRANSPORTER ROOM 3 // AWAY TEAM EXPEDITION</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span id="awayMissionLocation">ORBITAL INSERTION</span>
+                <button class="mini-lcars-btn" onclick="window.enterpriseGame.switchDeck('tactical')" style="background:#000;color:var(--lcars-gold);border:1px solid #000;padding:2px 10px;">RETURN TO SPACE VIEWSCREEN</button>
+              </div>
+            </div>
+
+            <div class="away-team-grid">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:0.78rem;color:var(--lcars-peach);font-weight:700;">
+                  1. SELECT 4 SENIOR OFFICERS FOR THE AWAY TEAM (CLICK TO TOGGLE):
+                </div>
+                <div class="roster-selection-grid" id="awayRosterGrid"></div>
+                <div style="font-family:var(--font-mono);font-size:0.74rem;color:var(--lcars-ice);background:#091122;padding:6px 10px;border-radius:6px;" id="awayTeamTotals"></div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div class="transporter-chamber">
+                  <div style="font-family:var(--font-lcars);font-size:0.85rem;color:var(--lcars-ice);letter-spacing:1px;">
+                    TRANSPORTER PAD MATRIX — CHIEF MILES O’BRIEN AT CONTROLS
+                  </div>
+                  <div class="transporter-pads-row" id="transporterPadsRow"></div>
+                </div>
+
+                <div class="telemetry-card" id="awayNarrativeStageBox" style="flex:1;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================
+               DECK OVERLAY 3: ASTROMETRICS & EPISODE SELECTOR
+               ================================================================ -->
+          <div class="deck-overlay scroller hidden" id="astrometricsDeckOverlay">
+            <div class="lcars-section-header blue">
+              <span>ASTROMETRICS LAB // SECTOR NAVIGATION &amp; TNG EPISODES</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span>WARP DRIVE READY</span>
+                <button class="mini-lcars-btn" onclick="window.enterpriseGame.switchDeck('tactical')" style="background:#000;color:var(--lcars-ice);border:1px solid #000;padding:2px 10px;">RETURN TO SPACE VIEWSCREEN</button>
+              </div>
+            </div>
+
+            <div class="telemetry-card" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <span style="font-family:var(--font-lcars);color:var(--lcars-peach);letter-spacing:1px;">
+                HOLODECK / TACTICAL SKIRMISH SPAWNER (SPAWN ADDITIONAL VESSEL IN CURRENT SECTOR):
+              </span>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="mini-lcars-btn spawn-skirmish-btn" data-type="warbird">+ ROMULAN WARBIRD</button>
+                <button class="mini-lcars-btn spawn-skirmish-btn" data-type="klingon">+ KLINGON BIRD-OF-PREY</button>
+                <button class="mini-lcars-btn spawn-skirmish-btn" data-type="cardassian">+ CARDASSIAN GALOR</button>
+                <button class="mini-lcars-btn spawn-skirmish-btn" data-type="borg" style="background:var(--lcars-salmon);color:#000;">+ BORG CUBE</button>
+                <button class="mini-lcars-btn spawn-skirmish-btn" data-type="borg_queen" style="background:var(--lcars-green);color:#000;font-weight:900;">+ BORG QUEEN DIAMOND (BOSS)</button>
+              </div>
+            </div>
+
+            <div class="sector-cards-grid" id="sectorCardsGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: SENIOR BRIDGE STAFF ABILITIES & CAPTAIN'S LOG -->
+      <aside class="lcars-column" aria-label="Bridge Senior Officers and Captain's Log">
+        <div class="lcars-section-header">
+          <span>BRIDGE SENIOR OFFICERS</span>
+          <span>CMD-07</span>
+        </div>
+
+        <div class="crew-stations-list scroller" id="crewStationsList"></div>
+
+        <div class="lcars-section-header blue">
+          <span>CAPTAIN’S LOG &amp; TACTICAL FEED</span>
+          <span>SUBSPACE</span>
+        </div>
+
+        <div class="captains-log-feed scroller" id="captainsLogFeed" aria-live="polite"></div>
+      </aside>
+    </main>
+
+    <!-- ====================================================================
+         BOTTOM LCARS FOOTER BAR
+         ==================================================================== -->
+    <footer class="lcars-footer">
+      <div class="lcars-elbow-bottom-left">
+        STARFLEET COMMAND // SECTOR 001
+      </div>
+      <div class="lcars-footer-bars">
+        <div class="footer-pill">
+          <strong>HELM:</strong> CLICK SPACE OR WASD / ARROWS
+        </div>
+        <div class="footer-pill">
+          <strong>WEAPONS:</strong> SPACE (PHASERS) // F (TORPEDO) // T (TARGET)
+        </div>
+        <div class="footer-pill">
+          <strong>HARMONICS:</strong> M (REMODULATE) // H (HAIL)
+        </div>
+      </div>
+      <div class="lcars-endcap-right" style="background:var(--lcars-gold);"></div>
+    </footer>
+  </div>
+
+  <!-- ======================================================================
+       NATIVE LIGHT-DISMISS STARFLEET COMMAND MANUAL DIALOG
+       ====================================================================== -->
+  <dialog id="manualDialog" class="lcars-dialog" closedby="any" aria-labelledby="manualDialogTitle">
+    <form method="dialog" style="display:flex;flex-direction:column;gap:12px;">
+      <div class="lcars-section-header gold">
+        <span id="manualDialogTitle">USS ENTERPRISE NCC-1701-D — COMMANDER’S MANUAL</span>
+        <span>LCARS 2366</span>
+      </div>
+      <p style="font-size:0.88rem;line-height:1.45;">
+        Welcome to the Bridge of the Galaxy-class <strong>USS Enterprise (NCC-1701-D)</strong>. This simulator combines all three modes of Starfleet command:
+      </p>
+      <ul style="padding-left:20px;font-size:0.84rem;line-height:1.55;color:var(--lcars-peach);">
+        <li><strong>1. Bridge Commander Simulator (Left &amp; Right Consoles):</strong> Balance Matter/Antimatter Warp Power across Weapons, Shields, Engines, and Sensors. Click individual Shield Quadrants (FWD/AFT/PORT/STBD) to reinforce them, tune your <strong>Harmonic Frequency (MHz)</strong> to counter the Borg or match Data’s sensor scans, and trigger Senior Officer Bridge Abilities (including the <em>Picard Maneuver</em> warp decoy!).</li>
+        <li><strong>2. Hailing Diplomacy &amp; Away-Team Adventures (Top Mode Tabs):</strong> Hail alien commanders (Tomalak, Duras, Gul Macet, the Crystalline Entity, or the Borg Queen) on the Main Viewscreen with live counsel from Troi, Data, and Worf. Or switch to <strong>Transporter Room 3</strong> to pick a 4-officer Away Team and beam down for branching narrative missions!</li>
+        <li><strong>3. Tactical Space Combat &amp; 3-Phase Final Boss (Main Viewscreen):</strong> Fly the Enterprise-D using <code>WASD</code> / Arrow keys or click anywhere in space. Click <strong>⚔ WARP TO FINAL BOSS</strong> in the top bar (or Episode VII in Astrometrics) to face <strong>The Borg Queen’s Command Diamond</strong> across 3 phases!</li>
+      </ul>
+      <div style="display:flex;justify-content:flex-end;">
+        <button type="submit" class="tac-btn phaser">MAKE IT SO (CLOSE)</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ======================================================================
+       FINAL BOSS VICTORY COMMENDATION DIALOG
+       ====================================================================== -->
+  <dialog id="victoryDialog" class="lcars-dialog" closedby="any" aria-labelledby="victoryDialogTitle">
+    <form method="dialog" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="lcars-section-header" style="background:var(--lcars-green);color:#000;">
+        <span id="victoryDialogTitle">STARFLEET COMMAND CITATION OF VALOR // UNIMATRIX 01 DESTROYED</span>
+        <span>VICTORY</span>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div class="portrait-svg-wrap" style="width:110px;height:110px;flex-shrink:0;" id="victoryPicardPortrait"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <h3 style="font-family:var(--font-lcars);color:var(--lcars-gold);font-size:1.2rem;letter-spacing:1px;">
+            THE BORG QUEEN’S COMMAND DIAMOND HAS BEEN SHATTERED!
+          </h3>
+          <p style="font-size:0.88rem;line-height:1.5;color:var(--text-primary);">
+            “Captain’s Personal Log, Supplemental: Against overwhelming odds, the crew of the <strong>USS Enterprise (NCC-1701-D)</strong> held the line at Sector 001. Through precision harmonic modulation, daring Away Team courage, and the indomitable spirit of Starfleet, the Borg Queen’s Nexus has collapsed back into transwarp space. The Federation is safe.”
+          </p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,153,0,0.3);padding-top:10px;">
+        <span style="font-family:var(--font-mono);font-size:0.76rem;color:var(--lcars-ice);">
+          COMMENDATION AWARDED: CHRISTOPHER PIKE MEDAL OF VALOR
+        </span>
+        <button type="submit" class="tac-btn phaser">CONTINUE PATROL (“ENGAGE!”)</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="audio.js?v=3"></script>
+  <script src="portraits.js?v=3"></script>
+  <script src="missions.js?v=3"></script>
+  <script src="game.js?v=3"></script>
+</body>
+</html>
